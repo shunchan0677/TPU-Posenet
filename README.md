@@ -8,9 +8,6 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 **2. [Inference behavior](#2-inference-behavior)**  
 　**2-1. [Sync, TPU x1, USB Camera, Single Person](#2-2-sync-tpu-x1-usb-camera-single-person)**  
 **3. [Introduction procedure](#3-introduction-procedure)**  
-　**3-1. [Common procedures for devices](#3-1-common-procedures-for-devices)**  
-　**3-2-1. [Only Linux](#3-2-1-only-linux)**  
-　**3-2-2. [Only RaspberryPi (Stretch or Buster)](#3-2-2-only-raspberrypi-stretch-or-buster)**  
 **4. [Usage](#4-usage)**  
 **5. [Reference articles](#5-reference-articles)**  
 
@@ -33,7 +30,6 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 ![09](media/09.gif)  
 
 ## 3. Introduction procedure
-### 3-1. Common procedures for devices
 Install Edge TPU API and download models.
 
 ```bash
