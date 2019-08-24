@@ -1,12 +1,14 @@
 import argparse
 import numpy as np
+import sys
+sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+
 import cv2
 import time
 from PIL import Image
 from time import sleep
 from edgetpu.basic import edgetpu_utils
 from pose_engine import PoseEngine
-
 lastresults = None
 processes = []
 frameBuffer = None
