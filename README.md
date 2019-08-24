@@ -64,7 +64,7 @@ sudo apt update
 sudo apt install ros-$CHOOSE_ROS_DISTRO-ros1-bridge
 
 
-### Build cv_vridge for python3
+### Build cv_bridge for python3
 git clone https://github.com/ros-perception/vision_opencv.git
 cd vision_opencv
 git checkout ros2
