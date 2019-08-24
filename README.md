@@ -23,7 +23,7 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 - Python 3.5.2+
 
 ## 2. Inference result
-![inference result](./media/result.png)
+<img src="./media/result.png" width="320px">
 
 ## 3. Introduction procedure
 Install Edge TPU API and download models.
