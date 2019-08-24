@@ -97,7 +97,7 @@ source /opt/ros/ardent/setup.bash
 rviz2
 ```
 
-If you want to ROS2-ROS1 bridge...
+If you want to ROS2-ROS1 bridge...(need to launch roscore)
 
 ```bash
 source /opt/ros/ardent/setup.bash
