@@ -22,7 +22,7 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 - Self-powered USB 3.0 Hub
 - Python 3.5.2+
 
-## 2. Inference Result
+## 2. Inference result
 
 
 ## 3. Introduction procedure
