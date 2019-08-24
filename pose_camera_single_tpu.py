@@ -10,6 +10,7 @@ import std_msgs.msg as std_msg
 import sys
 sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
+from cv_bridge import CvBridge, CvBridgeError
 import time
 from PIL import Image
 from time import sleep
@@ -48,6 +49,7 @@ class TestDisplayNode(node.Node):
         self.__window_name = "ROS2 PoseNet"
         profile = qos.QoSProfile()
         self.sub = self.create_subscription(msg.Image, '/image', self.msg_callback, qos_profile=profile)
+        self.pub = self.create_publisher(msg.Image, '/recognized_image')
         self.engine = engine
         self.fps = ""
         self.detectfps = ""
@@ -57,8 +59,11 @@ class TestDisplayNode(node.Node):
         self.time2 = 0
         self.t1 = time.perf_counter()
         self.t2 = time.perf_counter()
+        self.msg = msg.Image()
+        self.cv_bridge = CvBridge()
 
     def msg_callback(self, m : msg.Image):
+        self.msg = m
         np_img = np.reshape(m.data, (m.height, m.width, 3)).astype(np.uint8)
         self.recognize(np_img)
 
@@ -116,7 +121,11 @@ class TestDisplayNode(node.Node):
         else:
             imdraw = color_image
 
-        self.display(imdraw)
+        #self.display(imdraw)
+        img_msg = self.cv_bridge.cv2_to_imgmsg(imdraw,encoding="bgr8")
+
+        self.pub.publish(img_msg)
+        
 
         # FPS calculation
         self.framecount += 1
