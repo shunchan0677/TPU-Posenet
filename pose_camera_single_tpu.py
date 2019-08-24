@@ -1,8 +1,14 @@
+# coding=utf-8
+
 import argparse
 import numpy as np
+import rclpy
+import rclpy.node as node
+import rclpy.qos as qos
+import sensor_msgs.msg as msg
+import std_msgs.msg as std_msg
 import sys
 sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
-
 import cv2
 import time
 from PIL import Image
@@ -13,12 +19,6 @@ lastresults = None
 processes = []
 frameBuffer = None
 results = None
-fps = ""
-detectfps = ""
-framecount = 0
-detectframecount = 0
-time1 = 0
-time2 = 0
 
 EDGES = (
     ('nose', 'left eye'),
@@ -42,36 +42,96 @@ EDGES = (
     ('right knee', 'right ankle'),
 )
 
+class TestDisplayNode(node.Node):
+    def __init__(self,engine):
+        super().__init__('IProc_TestDisplayNode')
+        self.__window_name = "ROS2 PoseNet"
+        profile = qos.QoSProfile()
+        self.sub = self.create_subscription(msg.Image, '/image', self.msg_callback, qos_profile=profile)
+        self.engine = engine
+        self.fps = ""
+        self.detectfps = ""
+        self.framecount = 0
+        self.detectframecount = 0
+        self.time1 = 0
+        self.time2 = 0
+        self.t1 = time.perf_counter()
+        self.t2 = time.perf_counter()
 
-def draw_pose(img, pose, threshold=0.2):
-    xys = {}
-    for label, keypoint in pose.keypoints.items():
-        if keypoint.score < threshold: continue
-        xys[label] = (int(keypoint.yx[1]), int(keypoint.yx[0]))
-        img = cv2.circle(img, (int(keypoint.yx[1]), int(keypoint.yx[0])), 5, (0, 255, 0), -1)
+    def msg_callback(self, m : msg.Image):
+        np_img = np.reshape(m.data, (m.height, m.width, 3)).astype(np.uint8)
+        self.recognize(np_img)
 
-    for a, b in EDGES:
-        if a not in xys or b not in xys: continue
-        ax, ay = xys[a]
-        bx, by = xys[b]
-        img = cv2.line(img, (ax, ay), (bx, by), (0, 255, 255), 2)
+    def display(self, img : np.ndarray):
+        cv2.imshow(self.__window_name, img)
+        cv2.waitKey(1)
+
+    def draw_pose(self,img, pose, threshold=0.2):
+        xys = {}
+        for label, keypoint in pose.keypoints.items():
+            if keypoint.score < threshold: continue
+            xys[label] = (int(keypoint.yx[1]), int(keypoint.yx[0]))
+            img = cv2.circle(img, (int(keypoint.yx[1]), int(keypoint.yx[0])), 5, (0, 255, 0), -1)
+
+        for a, b in EDGES:
+            if a not in xys or b not in xys: continue
+            ax, ay = xys[a]
+            bx, by = xys[b]
+            img = cv2.line(img, (ax, ay), (bx, by), (0, 255, 255), 2)
 
 
-def overlay_on_image(frames, result, model_width, model_height):
+    def overlay_on_image(self,frames, result, model_width, model_height):
+        color_image = frames
 
-    color_image = frames
+        if isinstance(result, type(None)):
+            return color_image
+        img_cp = color_image.copy()
 
-    if isinstance(result, type(None)):
-        return color_image
-    img_cp = color_image.copy()
+        for pose in result:
+           self.draw_pose(img_cp, pose)
 
-    for pose in result:
-        draw_pose(img_cp, pose)
+        cv2.putText(img_cp, self.detectfps,(model_width-170,15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (38,0,255), 1, cv2.LINE_AA)
 
-    cv2.putText(img_cp, fps,       (model_width-170,15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (38,0,255), 1, cv2.LINE_AA)
-    cv2.putText(img_cp, detectfps, (model_width-170,30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (38,0,255), 1, cv2.LINE_AA)
+        return img_cp
 
-    return img_cp
+    def recognize(self, img):
+        self.t1 = time.perf_counter()
+        camera_width  = 320
+        camera_height = 240
+        model_width   = 640
+        model_height  = 480
+
+        color_image = img
+
+        # Run inference.
+        color_image = cv2.resize(color_image, (model_width, model_height))
+        prepimg = color_image[:, :, ::-1].copy()
+
+        tinf = time.perf_counter()
+        res, inference_time = self.engine.DetectPosesInImage(prepimg)
+
+        if res:
+            self.detectframecount += 1
+            imdraw = self.overlay_on_image(color_image, res, model_width, model_height)
+        else:
+            imdraw = color_image
+
+        self.display(imdraw)
+
+        # FPS calculation
+        self.framecount += 1
+        if self.framecount >= 15:
+            self.detectfps = "(Detection) {:.1f} FPS".format(self.detectframecount/self.time2)
+            self.framecount = 0
+            self.detectframecount = 0
+            self.time1 = 0
+            self.time2 = 0
+        self.t2 = time.perf_counter()
+        elapsedTime = self.t2 - self.t1
+        self.time1 += 1/elapsedTime
+        self.time2 += elapsedTime
+        
+
 
 if __name__ == '__main__':
 
@@ -87,64 +147,16 @@ if __name__ == '__main__':
     vidfps    = args.vidfps
     videofile = args.videofile
 
-    camera_width  = 320
-    camera_height = 240
-    model_width   = 640
-    model_height  = 480
 
     engine = PoseEngine(model)
     sleep(5)
 
-    if videofile == "":
-        cam = cv2.VideoCapture(usbcamno)
-        cam.set(cv2.CAP_PROP_FPS, vidfps)
-        cam.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width)
-        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
-        waittime = 1
-        window_name = "USB Camera"
-    else:
-        cam = cv2.VideoCapture(videofile)
-        waittime = vidfps - 20
-        window_name = "Movie File"
 
-    cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+    rclpy.init()
+    node = TestDisplayNode(engine)
 
-    while True:
-        t1 = time.perf_counter()
+    rclpy.spin(node)
 
-        ret, color_image = cam.read()
-        if not ret:
-            continue
-
-        # Run inference.
-        color_image = cv2.resize(color_image, (model_width, model_height))
-        prepimg = color_image[:, :, ::-1].copy()
-
-        tinf = time.perf_counter()
-        res, inference_time = engine.DetectPosesInImage(prepimg)
-
-        if res:
-            detectframecount += 1
-            imdraw = overlay_on_image(color_image, res, model_width, model_height)
-        else:
-            imdraw = color_image
-
-        cv2.imshow(window_name, imdraw)
-
-        if cv2.waitKey(waittime)&0xFF == ord('q'):
-            break
-
-        # FPS calculation
-        framecount += 1
-        if framecount >= 15:
-            fps       = "(Playback) {:.1f} FPS".format(time1/15)
-            detectfps = "(Detection) {:.1f} FPS".format(detectframecount/time2)
-            framecount = 0
-            detectframecount = 0
-            time1 = 0
-            time2 = 0
-        t2 = time.perf_counter()
-        elapsedTime = t2-t1
-        time1 += 1/elapsedTime
-        time2 += elapsedTime
+    node.destroy_node()
+    rclpy.shutdown()
 
