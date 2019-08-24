@@ -1,5 +1,5 @@
 # TPU-Posenet on ROS2
-Edge TPU Accelerator/Multi-TPU + Posenet + Python + Sync + LaptopPC **"+ ROS2"**.  
+Edge TPU Accelerator + Posenet + Python + Sync + LaptopPC **"+ ROS2"**.  
 Inspired by **[google-coral/project-posenet](https://github.com/google-coral/project-posenet)** and **[PINTO0309/TPU-Posenet](https://github.com/PINTO0309/TPU-Posenet)**.  
 This repository makes it possible to perform Posenet estimation using TPU on ROS2. 
 
@@ -21,8 +21,7 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 - ROS 2 Ardent
 - OpenCV4.1.1-openvino
 - Cv_bridge on python3
-- Coral Edge TPU Accelerator (Multi-TPU)
-    - Automatically detect the number of multiple TPU accelerators connected to a USB hub to improve performance.
+- Coral Edge TPU Accelerator
 - USB Camera or ROSBAG
 - Self-powered USB 3.0 Hub
 - Python 3.5.2+
