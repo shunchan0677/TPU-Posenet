@@ -117,3 +117,5 @@ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 
 **ROS 1とROS 2のつながり（ros1_bridge）
 (https://gbiggs.github.io/rosjp_ros2_intro/ros1_bridge.html)**
+
+**image callback in python very slow(https://github.com/ros2/ros2/issues/509)**
