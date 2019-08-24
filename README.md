@@ -2,7 +2,7 @@
 Edge TPU Accelerator + Posenet + Python + Sync + LaptopPC **"+ ROS2"**.  
 Inspired by **[google-coral/project-posenet](https://github.com/google-coral/project-posenet)** and **[PINTO0309/TPU-Posenet](https://github.com/PINTO0309/TPU-Posenet)**.  
 This repository makes it possible to perform Posenet estimation using TPU on ROS2. 
-Image messange publishing is slow (about 5Hz) because cv_bridge.cv2_to_imgmsg is slow on python3. If you use opencv window, you can show fast results (about 50Hz) using single TPU.
+Image messange publishing is slow (about 5Hz) because cv_bridge.cv2_to_imgmsg is slow on ROS2(https://github.com/ros2/rosidl_python/issues/79). If you use opencv window, you can show fast results (about 50Hz) using single TPU.
 
 ## 0. Table of contents
 **1. [Environment](#1-environment)**  
