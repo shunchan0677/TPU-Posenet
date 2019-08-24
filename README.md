@@ -39,8 +39,8 @@ $ wget https://dl.google.com/coral/edgetpu_api/edgetpu_api_latest.tar.gz -O edge
 $ tar xzf edgetpu_api.tar.gz
 $ sudo edgetpu_api/install.sh
 
-$ git clone https://github.com/shunchan0677/TPU-Posenet.git
-$ cd TPU-Posenet.git
+$ git clone https://github.com/shunchan0677/TPU-Posenet-ROS2.git
+$ cd TPU-Posenet-ROS2
 $ cd models;./download.sh;cd ..
 ```
 
