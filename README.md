@@ -6,7 +6,6 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 ## 0. Table of contents
 **1. [Environment](#1-environment)**  
 **2. [Inference behavior](#2-inference-behavior)**  
-　**2-1. [Sync, TPU x1, USB Camera, Single Person](#2-2-sync-tpu-x1-usb-camera-single-person)**  
 **3. [Introduction procedure](#3-introduction-procedure)**  
 **4. [Usage](#4-usage)**  
 **5. [Reference articles](#5-reference-articles)**  
@@ -24,10 +23,7 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 - Python 3.5.2+
 
 ## 2. Inference behavior
-  
-### 2-1. Sync, TPU x1, USB Camera, Single Person
-**Youtube：https://youtu.be/GuuXzpLXFJo**  
-![09](media/09.gif)  
+
 
 ## 3. Introduction procedure
 Install Edge TPU API and download models.
@@ -108,10 +104,8 @@ source /opt/ros/ardent/setup.bash
 ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
 
-## 5. Result
 
-
-## 6. Reference articles
+## 5. Reference articles
 **[Edge TPU USB Accelerator analysis - I/O data transfer - Qiita - iwatake2222](https://qiita.com/iwatake2222/items/922f02893355b30dab2e)**  
 
 **[[150 FPS ++] Connect three Coral Edge TPU accelerators and infer in parallel processing to get ultra-fast object detection inference performance ーTo the extreme of useless high performanceー - Qiita - PINTO](https://qiita.com/PINTO/items/63b6f01eb22a5ab97901#%EF%BC%91introduction-1)**  
