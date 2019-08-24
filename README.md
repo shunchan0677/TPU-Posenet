@@ -5,7 +5,7 @@ This repository makes it possible to perform Posenet estimation using TPU on ROS
 
 ## 0. Table of contents
 **1. [Environment](#1-environment)**  
-**2. [Inference result](#2-inference-result)**  
+**2. [Inference result](#2-inference-result-on-rviz2)**  
 **3. [Introduction procedure](#3-introduction-procedure)**  
 **4. [Usage](#4-usage)**  
 **5. [Reference articles](#5-reference-articles)**  
